@@ -429,15 +429,18 @@ const medir = () => {
 };
 const alcance = () => journey.offsetHeight - extra - innerHeight;
 
+// Celular: sem zoom nem fade na hero (o campo de busca fica parado e o teclado não o desmonta); só o paralaxe da imagem com a segunda seção subindo
+const celular = matchMedia('(max-width:1023px)');
 const quadro = () => {
   const vh = innerHeight;
-  const a = seg(tAtual, 0, 1);       // 1ª rolagem: zoom na hero
-  const b = seg(tAtual, .7, 1.8);     // 2ª rolagem: segunda seção sobe
+  const movel = celular.matches;
+  const a = movel ? 0 : seg(tAtual, 0, 1);       // 1ª rolagem: zoom na hero
+  const b = movel ? seg(tAtual, 0, 1.6) : seg(tAtual, .7, 1.8);     // 2ª rolagem: segunda seção sobe
   heroBg.style.transformOrigin = `50% ${a * 70}%`;
-  heroBg.style.transform = `scale(${1 + a * .65})`;
-  const texto = seg(tAtual, 0, .55);
+  heroBg.style.transform = movel ? `translateY(${-b * 8}%)` : `scale(${1 + a * .65})`;
+  const texto = movel ? 0 : seg(tAtual, 0, .55);
   heroEl.style.opacity = 1 - texto;
-  heroEl.style.transform = `scale(${1 + texto * .14})`;
+  heroEl.style.transform = texto ? `scale(${1 + texto * .14})` : '';
   heroEl.style.visibility = texto >= 1 ? 'hidden' : 'visible';
   sala.style.transform = `translateY(${(1 - b) * 100}%)`;
   const c = extra ? clamp01((scrollY - alcance()) / extra) : 0;
@@ -450,28 +453,24 @@ const passo = () => {
   rodando = tAtual !== tAlvo;
   if (rodando) requestAnimationFrame(passo);
 };
-let travado = false;
+const campo = document.querySelector('#busca input');
 const aoRolar = () => {
-  if (travado) return;
+  if (document.activeElement === campo) return; // digitando: a transição fica parada
   tAlvo = clamp01(scrollY / alcance()) * 2;
   if (!rodando) { rodando = true; requestAnimationFrame(passo); }
 };
 addEventListener('scroll', aoRolar, { passive: true });
-addEventListener('resize', () => { medir(); aoRolar(); });
+let largura = innerWidth;
+addEventListener('resize', () => {
+  if (innerWidth === largura) return; // teclado abrindo/fechando só muda a altura
+  largura = innerWidth;
+  medir(); aoRolar();
+});
+campo.addEventListener('blur', () => aoRolar());
 addEventListener('load', () => { medir(); aoRolar(); });
 medir();
 tAtual = tAlvo = clamp01(scrollY / alcance()) * 2;
 quadro();
-
-// Campo de busca: no celular o teclado empurra a página e a transição do topo andava junto; ao focar, a rolagem fica travada até o teclado abrir
-const campo = document.querySelector('#busca input');
-campo.addEventListener('focus', () => {
-  const y = scrollY;
-  travado = true;
-  const prende = () => { if (scrollY !== y) scrollTo({ top: y, behavior: 'instant' }); };
-  addEventListener('scroll', prende);
-  setTimeout(() => { removeEventListener('scroll', prende); travado = false; aoRolar(); }, 900);
-});
 
 // Link "Serviços": leva ao ponto em que a segunda seção está inteira na tela
 document.querySelectorAll('a[href="#servicos"]').forEach(a => a.addEventListener('click', e => {

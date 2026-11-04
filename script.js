@@ -450,7 +450,9 @@ const passo = () => {
   rodando = tAtual !== tAlvo;
   if (rodando) requestAnimationFrame(passo);
 };
+let travado = false;
 const aoRolar = () => {
+  if (travado) return;
   tAlvo = clamp01(scrollY / alcance()) * 2;
   if (!rodando) { rodando = true; requestAnimationFrame(passo); }
 };
@@ -460,6 +462,16 @@ addEventListener('load', () => { medir(); aoRolar(); });
 medir();
 tAtual = tAlvo = clamp01(scrollY / alcance()) * 2;
 quadro();
+
+// Campo de busca: no celular o teclado empurra a página e a transição do topo andava junto; ao focar, a rolagem fica travada até o teclado abrir
+const campo = document.querySelector('#busca input');
+campo.addEventListener('focus', () => {
+  const y = scrollY;
+  travado = true;
+  const prende = () => { if (scrollY !== y) scrollTo({ top: y, behavior: 'instant' }); };
+  addEventListener('scroll', prende);
+  setTimeout(() => { removeEventListener('scroll', prende); travado = false; aoRolar(); }, 900);
+});
 
 // Link "Serviços": leva ao ponto em que a segunda seção está inteira na tela
 document.querySelectorAll('a[href="#servicos"]').forEach(a => a.addEventListener('click', e => {

@@ -321,17 +321,26 @@ document.getElementById('busca').addEventListener('submit', e => {
   aplicarFiltro();
   // fecha o teclado e rola por JS: o scrollIntoView suave é interrompido no celular pelo teclado e pelo palco fixo da transição
   document.activeElement?.blur();
+  const sec = document.getElementById('imoveis');
+  const alvo = () => sec.getBoundingClientRect().top + scrollY - 70;
+  // o teclado fechando muda a altura da tela e, com ela, a altura da transição do topo: depois de chegar, reconfere a posição
+  const corrigir = () => {
+    let n = 0;
+    const iv = setInterval(() => {
+      if (Math.abs(sec.getBoundingClientRect().top - 70) > 3) scrollTo({ top: alvo(), behavior: 'instant' });
+      if (++n >= 16) clearInterval(iv);
+    }, 150);
+  };
   setTimeout(() => {
-    const alvo = document.getElementById('imoveis').getBoundingClientRect().top + scrollY - 70;
-    const de = scrollY, dur = Math.min(900, 300 + Math.abs(alvo - de) * .25), t0 = performance.now();
+    const a = alvo(), de = scrollY, dur = Math.min(900, 300 + Math.abs(a - de) * .25), t0 = performance.now();
     const passo = t => {
       const p = Math.min(1, (t - t0) / dur);
-      scrollTo({ top: de + (alvo - de) * (1 - (1 - p) ** 3), behavior: 'instant' });
+      scrollTo({ top: de + (a - de) * (1 - (1 - p) ** 3), behavior: 'instant' });
       if (p < 1) requestAnimationFrame(passo);
     };
     requestAnimationFrame(passo);
-    setTimeout(() => scrollTo({ top: alvo, behavior: 'instant' }), dur + 120);
-  }, 200);
+    setTimeout(corrigir, dur + 50);
+  }, 450);
 });
 document.getElementById('filtros').addEventListener('click', e => {
   const b = e.target.closest('.chip');

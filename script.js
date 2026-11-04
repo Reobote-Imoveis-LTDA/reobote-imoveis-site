@@ -490,8 +490,8 @@ addEventListener('scroll', progresso, { passive: true });
 progresso();
 
 /* contato: mensagem livre vai para o WhatsApp */
-document.getElementById('form-contato')?.addEventListener('submit', e => {
+document.querySelectorAll('.cta-form').forEach(f => f.addEventListener('submit', e => {
   e.preventDefault();
-  const msg = document.getElementById('c-msg').value.trim();
+  const msg = f.querySelector('input').value.trim();
   window.open(waLink(msg ? `Olá! Vim pelo site da Reobote Imóveis. ${msg}` : 'Olá! Vim pelo site da Reobote Imóveis e gostaria de atendimento.'), '_blank', 'noopener');
-});
+}));

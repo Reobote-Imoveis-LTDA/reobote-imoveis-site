@@ -386,7 +386,7 @@ body.lock{overflow:hidden}
 .cta-photo img{object-position:50% 30%}
 @media (min-width:900px){.cta-photo{width:min(100%,380px)}}
 .nw{white-space:nowrap}
-.foot-brand img{height:96px;width:auto}
+.foot-brand img{height:124px;width:auto}
 .fazemos.longa{justify-content:flex-start;padding-top:84px}
 /* galerias com muitas miniaturas não podem alargar a grade */
 .feature{grid-template-columns:minmax(0,1fr)}
@@ -415,37 +415,6 @@ body.lock{overflow:hidden}
 .top-tel:hover{color:var(--gold2)}
 @media (min-width:1024px){.top-tel{font-size:13px;margin-right:22px}}
 
-/* sobre a Reobote (compacta) */
-.sobre{background:#000;padding-block:48px}
-.sobre h2{margin-bottom:20px}
-.sobre-in{display:flex;flex-direction:column;align-items:center;gap:22px;text-align:center}
-.sobre-txt{max-width:52ch;color:var(--mute);font-size:15px;line-height:1.6}
-.sobre-foto{width:150px;aspect-ratio:1;flex:none}
-.sobre-foto img{width:100%;height:100%;object-fit:cover;object-position:50% 30%;border-radius:16px;box-shadow:0 14px 34px rgba(0,0,0,.5)}
-@media (min-width:700px){
-  .sobre{padding-block:64px}
-  .sobre-in{flex-direction:row;justify-content:center;gap:36px;text-align:left}
-  .sobre-foto{width:170px}
-}
-.sobre-foto{width:240px;aspect-ratio:4/5}
-@media (min-width:700px){.sobre-foto{width:280px}.sobre-in{gap:44px}}
-/* foto da seção Sobre: mesmo design inclinado do CTA */
-.sobre-foto{position:relative;width:260px;aspect-ratio:9/10;rotate:-3deg;margin:6px 0}
-.sobre-foto::before{content:"";position:absolute;inset:0;border-radius:18px;background:#2a2a2a;rotate:6deg;translate:6px 4px}
-.sobre-foto img{position:relative;border-radius:18px;box-shadow:0 20px 50px rgba(0,0,0,.5)}
-@media (min-width:700px){.sobre-foto{width:320px}}
-/* CTA sem foto: conteúdo centralizado */
-#contato .cta-in{grid-template-columns:minmax(0,1fr);justify-items:center;text-align:center}
-#contato h2,#contato .cta-sub{margin-inline:auto;max-width:none}
-#contato .cta-sub{max-width:54ch}
-#contato .cta-form{margin-inline:auto;width:100%}
-#contato{display:flex;align-items:center;justify-content:center;padding-block:72px}
-#contato .cta-in{width:100%}
-#contato h2{margin-bottom:28px}
-#contato .cta-form{justify-content:center}
-.sobre-txt .dk{display:none}
-@media (min-width:700px){.sobre-txt{max-width:none}.sobre-txt .dk{display:inline}}
-
 /* hover nos botões flutuantes */
 .fab{transition:transform .3s cubic-bezier(.23,1,.32,1),box-shadow .3s,filter .3s}
 .fab svg{transition:transform .35s cubic-bezier(.23,1,.32,1)}
@@ -454,3 +423,7 @@ body.lock{overflow:hidden}
 .fab:active{transform:scale(.96)}
 .fab:not(.fab-ig):hover{box-shadow:0 14px 30px rgba(0,0,0,.55),0 0 0 6px rgba(37,211,102,.28)}
 .fab-ig:hover{box-shadow:0 14px 30px rgba(0,0,0,.55),0 0 0 6px rgba(214,36,159,.3)}
+
+/* imóveis para alugar (abaixo do destaque) */
+.alugar{margin-top:72px}
+.alugar .group{margin-bottom:0}

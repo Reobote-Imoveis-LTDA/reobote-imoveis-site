@@ -129,6 +129,39 @@ const IMOVEIS = [
     dif: [['bed', '3 suítes amplas e lavabo'], ['sofa', 'Sala integrada de jantar e TV'], ['grill', 'Sacada grande com área gourmet'], ['cabinet', 'Móveis planejados'], ['shield', 'Portas principais blindadas'], ['box', 'Lavanderia e dispensa']],
     cond: ['Condomínio R$ 1.550', 'IPTU R$ 258/mês'] }
 ];
+// Imóveis para alugar. Mesmo padrão dos de venda; `preco` já é o valor mensal e `cond` diz o que está incluso.
+const ftsA = (slug, n) => Array.from({ length: n }, (_, i) => `alugueis/${slug}-${String(i + 1).padStart(2, '0')}`);
+const ALUGUEIS = [
+  { id: 'alug-apto-parque-do-sol', alug: true, cat: 'Apartamento', tipo: 'Apartamento', local: 'Condomínio Parque do Sol', cidade: G,
+    end: 'Rua Cabo João Teruel Fregoni, 124 – Ponte Grande', preco: 'R$ 2.872/mês',
+    stats: [['bed', 2, 'Dormitórios'], ['car', 1, 'Vaga'], ['area', '50 m²', 'Área']],
+    fotos: ftsA('apto-parque-do-sol', 11),
+    desc: 'Apartamento de 50 m² com móveis planejados e sacada telada.',
+    dif: [['sofa', 'Sala, cozinha e lavanderia'], ['cabinet', 'Planejados no dormitório, cozinha, banheiro e área de serviço'], ['sun', 'Sacada telada'], ['box', 'Dois depósitos']],
+    cond: ['Condomínio e IPTU inclusos', 'Água e luz à parte'] },
+  { id: 'alug-apto-vida-plena', alug: true, cat: 'Apartamento', tipo: 'Apartamento mobiliado', local: 'Condomínio Vida Plena', cidade: G,
+    end: 'Av. Benjamin Harris Hunicutt, 430 – Portal dos Gramados', preco: 'R$ 4.500/mês',
+    stats: [['bed', 2, 'Dormitórios'], ['car', 1, 'Vaga coberta'], ['area', '59 m²', 'Área']],
+    fotos: ftsA('apto-vida-plena', 8),
+    desc: 'Apartamento mobiliado em frente ao Parque Shopping Maia, com lazer completo.',
+    dif: [['sofa', 'Mobiliado'], ['sun', 'Varanda'], ['key', 'Fechadura eletrônica'], ['pool', '3 piscinas, churrasqueiras e salões de festas'], ['building', 'Cinema, brinquedoteca, coworking e sauna'], ['pin', 'Em frente ao Parque Shopping Maia e Carrefour']],
+    cond: ['Água, luz, IPTU e condomínio inclusos'] },
+  { id: 'alug-casa-jardim-angelica-2', alug: true, cat: 'Casa', tipo: 'Casa', local: 'Jardim Angélica 2', cidade: G,
+    end: 'Rua Telha, 268 – Jardim Angélica 2', preco: 'R$ 2.500/mês',
+    stats: [['bed', 3, 'Quartos'], ['car', 4, 'Vagas'], ['bath', 1, 'Banheiro']],
+    fotos: ftsA('casa-jardim-angelica-2', 10),
+    desc: 'Casa com quintal amplo e salão independente acima, aceita pet.',
+    dif: [['sofa', 'Sala, cozinha e lavanderia'], ['bed', '3 quartos (1 de serviço)'], ['leaf', 'Quintal amplo'], ['building', 'Salão independente acima da casa'], ['user', 'Aceita pet (exceto pitbull)'], ['box', 'Dois depósitos']],
+    cond: ['Água e luz à parte'] },
+  { id: 'alug-apto-ouro-verde', alug: true, cat: 'Apartamento', tipo: 'Apartamento', local: 'Condomínio Ouro Verde', cidade: G,
+    end: 'Av. Marechal Rondon, 424 – Ponte Grande', preco: 'R$ 2.300/mês',
+    stats: [['bed', 2, 'Dormitórios'], ['car', 1, 'Vaga'], ['area', '56 m²', 'Área']],
+    fotos: ftsA('apto-ouro-verde', 10),
+    desc: 'Apartamento com sacada, salão de festas e churrasqueira, perto das principais vias.',
+    dif: [['sofa', 'Sala para 2 ambientes'], ['sun', 'Sacada'], ['user', 'Aceita pet de pequeno porte'], ['building', 'Salão de festas'], ['grill', 'Churrasqueira'], ['pin', 'Próximo à Av. Guarulhos, Dutra, Marginal e Fernão Dias'], ['box', 'Dois depósitos']],
+    cond: ['Condomínio e IPTU inclusos', 'Água e luz à parte'] }
+];
+const todosImoveis = [...IMOVEIS, ...ALUGUEIS];
 const CATEGORIAS = [['todos', 'Todos'], ['Casa', 'Casas'], ['Apartamento', 'Apartamentos']];
 const LIMITE = 8;
 const titulo = p => `${p.tipo}, ${p.local}`;
@@ -136,11 +169,13 @@ const titulo = p => `${p.tipo}, ${p.local}`;
 const stat = (icon, val, label) =>
   `<li><svg><use href="#i-${icon}"/></svg><b>${val}</b><small>${label}</small></li>`;
 const stats = p => p.stats.map(s => stat(...s)).join('');
-const interesse = p => `Olá! Tenho interesse em visitar: ${titulo(p)}, ${p.cidade} (${p.preco}).`;
+const interesse = p => p.alug
+  ? `Olá! Tenho interesse em alugar: ${titulo(p)}, ${p.cidade} (${p.preco}).`
+  : `Olá! Tenho interesse em visitar: ${titulo(p)}, ${p.cidade} (${p.preco}).`;
 
 const card = p => `
-  <article class="prop has-more" data-id="${p.id}" data-i="${IMOVEIS.indexOf(p)}" data-cat="${p.cat}" data-q="${[p.tipo, p.local, p.cidade, p.end || ''].join(' ')}">
-    <div class="ph"><img src="img/${p.fotos[0]}.jpg" alt="${titulo(p)}" loading="lazy"><i class="tag">Venda</i><button type="button" class="more">Ver detalhes</button></div>
+  <article class="prop has-more" data-id="${p.id}" data-i="${(p.alug ? ALUGUEIS : IMOVEIS).indexOf(p)}" data-cat="${p.cat}" data-q="${[p.tipo, p.local, p.cidade, p.end || ''].join(' ')}">
+    <div class="ph"><img src="img/${p.fotos[0]}.jpg" alt="${titulo(p)}" loading="lazy"><i class="tag">${p.alug ? 'Aluguel' : 'Venda'}</i><button type="button" class="more">Ver detalhes</button></div>
     <div class="prop-body">
       <h3>${p.tipo},<br>${p.local}</h3>
       <b class="price">${p.preco}</b>
@@ -157,6 +192,12 @@ document.getElementById('grupos').innerHTML = cidades.map(c => `
     <h2>Imóveis em ${c}</h2>
     ${[0, 1].map(k => `<div class="rowc" data-row="${k}"><div class="props">${k ? '' : IMOVEIS.filter(p => p.cidade === c).map(card).join('')}</div><div class="dots" aria-hidden="true"></div></div>`).join('')}
   </div>`).join('');
+document.getElementById('alugar').innerHTML = `
+  <div class="group alug" data-cidade="Guarulhos">
+    <p class="eyebrow">Locação</p>
+    <h2>Imóveis para alugar</h2>
+    ${[0, 1].map(k => `<div class="rowc" data-row="${k}"><div class="props">${k ? '' : ALUGUEIS.map(card).join('')}</div><div class="dots" aria-hidden="true"></div></div>`).join('')}
+  </div>`;
 document.getElementById('filtros').innerHTML = CATEGORIAS.map(([k, t], i) =>
   `<button type="button" class="chip${i ? '' : ' on'}" data-cat="${k}">${t} <small>${k === 'todos' ? IMOVEIS.length : IMOVEIS.filter(p => p.cat === k).length}</small></button>`).join('');
 document.getElementById('mais').innerHTML = `<a class="btn-line" role="button" tabindex="0">Ver todos os imóveis (${IMOVEIS.length})</a>`;
@@ -243,7 +284,7 @@ const openModal = p => {
       </div>
     </div>
     <div class="m-info">
-      <p class="eyebrow">Venda · ${p.cidade} – SP</p>
+      <p class="eyebrow">${p.alug ? 'Aluguel' : 'Venda'} · ${p.cidade} – SP</p>
       <h3>${titulo(p)}</h3>
       ${p.end ? `<p class="m-end"><svg><use href="#i-pin"/></svg>${p.end}</p>` : ''}
       <ul class="stats">${stats(p)}</ul>
@@ -259,7 +300,7 @@ const openModal = p => {
   document.body.classList.add('lock');
 };
 document.querySelectorAll('.prop.has-more').forEach(c => {
-  const p = IMOVEIS.find(x => x.id === c.dataset.id);
+  const p = todosImoveis.find(x => x.id === c.dataset.id);
   c.querySelectorAll('.ph, h3').forEach(el => el.addEventListener('click', () => openModal(p)));
 });
 modal.querySelector('.m-close').addEventListener('click', () => modal.close());
@@ -299,7 +340,7 @@ document.querySelectorAll('.rowc').forEach(r => r.querySelector('.props').addEve
 const aplicarFiltro = () => {
   const limitar = !filtro.q && filtro.cat === 'todos' && !filtro.todos;
   let total = 0, ocultos = 0;
-  document.querySelectorAll('.group').forEach(g => {
+  document.querySelectorAll('.group:not(.alug)').forEach(g => {
     let vis = 0;
     [...g.querySelectorAll('.prop')].sort((a, b) => a.dataset.i - b.dataset.i).forEach(c => {
       const ok = (!filtro.q || norm(c.dataset.q).includes(filtro.q)) && (filtro.cat === 'todos' || c.dataset.cat === filtro.cat);
